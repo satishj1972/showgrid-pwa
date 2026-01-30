@@ -1,158 +1,225 @@
 'use client';
 
-import { PageContainer } from '@/components/layout';
-import { Card, Badge, Button, ProgressBar } from '@/components/ui';
+import { useState } from 'react';
 import Link from 'next/link';
 
-// Mock data - will be replaced with Firebase
-const mockChallenge = {
-  id: '1',
-  title: 'Season 1 Dance Challenge',
-  trackName: 'ShowGrid Official Hook',
-  trackDuration: 60,
-  status: 'active' as const,
-  prizePool: 100000,
-  startDate: new Date('2026-01-15'),
-  endDate: new Date('2026-02-15'),
-  participantCount: 124,
-  rules: [
-    'Video must be exactly 60 seconds to the official music hook',
-    'Only one submission per studio allowed',
-    'Must feature original choreography',
-    'No explicit content or inappropriate gestures',
-    'Video must be shot in portrait mode (9:16)',
-    'Minimum 720p resolution required',
-    'All performers must be 18+ or have guardian consent',
-  ],
-};
-
 export default function ChallengePage() {
-  const now = new Date();
-  const totalDays = Math.ceil((mockChallenge.endDate.getTime() - mockChallenge.startDate.getTime()) / (1000 * 60 * 60 * 24));
-  const daysElapsed = Math.ceil((now.getTime() - mockChallenge.startDate.getTime()) / (1000 * 60 * 60 * 24));
-  const daysRemaining = Math.max(0, totalDays - daysElapsed);
-  const progress = Math.min(100, (daysElapsed / totalDays) * 100);
+  const [confirmations, setConfirmations] = useState({
+    original: false,
+    noRemix: false,
+    scoringWeights: false,
+  });
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-  };
-
-  const formatPrize = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
-  };
+  const allConfirmed = Object.values(confirmations).every(Boolean);
 
   return (
-    <PageContainer>
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-        <div>
-          <Badge variant="live" className="mb-2">Active</Badge>
-          <h1 className="text-2xl md:text-3xl font-sora font-bold text-frost-white">
-            {mockChallenge.title}
-          </h1>
-          <p className="text-soft-grey mt-1">
-            Compete for the top spot on the leaderboard
-          </p>
-        </div>
-
-        <Link href="/studio/upload">
-          <Button size="lg">Submit Your Entry</Button>
-        </Link>
+    <div className="min-h-screen bg-background-card pb-24 relative">
+      {/* Decorative Glow Background Elements */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card variant="glow" className="text-center">
-          <p className="text-pulse-gold font-sora font-bold text-2xl md:text-3xl">
-            {formatPrize(mockChallenge.prizePool)}
-          </p>
-          <p className="text-soft-grey text-sm mt-1">Prize Pool</p>
-        </Card>
-
-        <Card variant="glow" className="text-center">
-          <p className="text-electric-blue font-sora font-bold text-2xl md:text-3xl">
-            {mockChallenge.participantCount}
-          </p>
-          <p className="text-soft-grey text-sm mt-1">Participants</p>
-        </Card>
-
-        <Card variant="glow" className="text-center">
-          <p className="text-neon-mint font-sora font-bold text-2xl md:text-3xl">
-            {daysRemaining}
-          </p>
-          <p className="text-soft-grey text-sm mt-1">Days Left</p>
-        </Card>
-
-        <Card variant="glow" className="text-center">
-          <p className="text-hyper-pink font-sora font-bold text-2xl md:text-3xl">
-            {mockChallenge.trackDuration}s
-          </p>
-          <p className="text-soft-grey text-sm mt-1">Track Length</p>
-        </Card>
-      </div>
-
-      {/* Timeline */}
-      <Card variant="elevated" className="mb-6">
-        <h2 className="font-sora font-semibold text-lg text-frost-white mb-4">Timeline</h2>
-        
-        <div className="flex items-center justify-between text-sm mb-2">
-          <span className="text-soft-grey">{formatDate(mockChallenge.startDate)}</span>
-          <span className="text-soft-grey">{formatDate(mockChallenge.endDate)}</span>
-        </div>
-        
-        <ProgressBar value={progress} variant="score" />
-        
-        <p className="text-center text-soft-grey text-sm mt-3">
-          {daysRemaining > 0 
-            ? `${daysRemaining} days remaining to submit your entry` 
-            : 'Challenge has ended'}
-        </p>
-      </Card>
-
-      {/* Official Music */}
-      <Card variant="elevated" className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-violet-core/20 rounded-lg flex items-center justify-center">
-              <svg className="w-7 h-7 text-violet-core" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-              </svg>
+      <main className="max-w-[960px] mx-auto px-4 py-10">
+        {/* Page Heading */}
+        <div className="flex flex-wrap justify-between items-end gap-3 mb-8">
+          <div className="flex min-w-72 flex-col gap-3">
+            <h1 className="text-white text-4xl md:text-5xl font-black leading-tight tracking-tight">
+              Challenge Rules
+            </h1>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-sm">music_note</span>
+              <p className="text-text-secondary text-lg font-normal leading-normal">
+                Indian Classical Fusion - Track #09
+              </p>
             </div>
-            <div>
-              <h3 className="font-sora font-semibold text-frost-white">{mockChallenge.trackName}</h3>
-              <p className="text-soft-grey text-sm">{mockChallenge.trackDuration} seconds • Official Hook</p>
+          </div>
+          <button className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-full h-11 px-6 bg-primary text-white text-sm font-bold transition-all hover:scale-105 active:scale-95">
+            <span className="truncate">Track Details</span>
+          </button>
+        </div>
+
+        {/* Rules Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+          {/* How it Works */}
+          <div className="flex flex-1 gap-4 rounded-xl border border-border-primary bg-background-elevated p-6 flex-col neon-border hover:border-primary/50 transition-colors group">
+            <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+              <span className="material-symbols-outlined">analytics</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-white text-lg font-bold">How it Works</h2>
+              <ul className="text-text-secondary text-sm space-y-2">
+                <li className="flex gap-2 items-start">
+                  <span className="text-primary font-bold">1.</span> 
+                  Upload your high-definition performance video.
+                </li>
+                <li className="flex gap-2 items-start">
+                  <span className="text-primary font-bold">2.</span> 
+                  Community voting period (7 days).
+                </li>
+                <li className="flex gap-2 items-start">
+                  <span className="text-primary font-bold">3.</span> 
+                  Final Judge Panel review for top 10 finalists.
+                </li>
+              </ul>
             </div>
           </div>
 
-          <Link href="/studio/music">
-            <Button variant="secondary" size="sm">
-              Download
-            </Button>
-          </Link>
+          {/* Music Rules - Highlighted */}
+          <div className="flex flex-1 gap-4 rounded-xl border-2 border-primary bg-background-elevated p-6 flex-col shadow-[0_0_20px_rgba(244,37,157,0.1)] group">
+            <div className="flex items-center justify-center size-12 rounded-lg bg-primary text-white">
+              <span className="material-symbols-outlined">speaker</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-white text-lg font-bold">Music Rules</h2>
+              <p className="text-white text-sm font-semibold mb-1">Strict Single-Track Policy:</p>
+              <div className="bg-primary/20 p-3 rounded-lg border border-primary/30">
+                <p className="text-white text-xs leading-relaxed">
+                  <span className="text-primary font-black uppercase">Warning:</span> No remixes, mashups, or alterations. Use the provided track as-is.
+                </p>
+              </div>
+              <p className="text-text-secondary text-xs mt-2 italic">
+                Violations result in immediate disqualification.
+              </p>
+            </div>
+          </div>
+
+          {/* Scoring Criteria */}
+          <div className="flex flex-1 gap-4 rounded-xl border border-border-primary bg-background-elevated p-6 flex-col neon-border group">
+            <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+              <span className="material-symbols-outlined">grade</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-white text-lg font-bold">Scoring Criteria</h2>
+              <div className="space-y-3">
+                <div>
+                  <div className="w-full bg-background-dark rounded-full h-1.5 overflow-hidden">
+                    <div className="bg-primary h-full" style={{ width: '40%' }}></div>
+                  </div>
+                  <div className="flex justify-between text-xs mt-1">
+                    <span className="text-white">Choreography</span>
+                    <span className="text-primary">40%</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="w-full bg-background-dark rounded-full h-1.5 overflow-hidden">
+                    <div className="bg-primary h-full" style={{ width: '30%' }}></div>
+                  </div>
+                  <div className="flex justify-between text-xs mt-1">
+                    <span className="text-white">Synchronization</span>
+                    <span className="text-primary">30%</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="w-full bg-background-dark rounded-full h-1.5 overflow-hidden">
+                    <div className="bg-primary h-full" style={{ width: '30%' }}></div>
+                  </div>
+                  <div className="flex justify-between text-xs mt-1">
+                    <span className="text-white">Expression</span>
+                    <span className="text-primary">30%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Eligibility */}
+          <div className="flex flex-1 gap-4 rounded-xl border border-border-primary bg-background-elevated p-6 flex-col neon-border group">
+            <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+              <span className="material-symbols-outlined">groups</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-white text-lg font-bold">Eligibility</h2>
+              <p className="text-text-secondary text-sm leading-normal">
+                Open to all registered dance studios. Performance groups must consist of <span className="text-white font-bold">4 to 12 performers</span> only.
+              </p>
+              <p className="text-text-secondary text-xs italic opacity-80">
+                Registration certificate must be valid.
+              </p>
+            </div>
+          </div>
+
+          {/* Prize Pool & Rewards - Wide */}
+          <div className="flex flex-1 gap-4 rounded-xl border border-border-primary bg-background-elevated p-6 flex-col neon-border group md:col-span-2">
+            <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+              <span className="material-symbols-outlined">trophy</span>
+            </div>
+            <div className="flex flex-row items-center gap-6">
+              <div className="flex flex-col gap-2 flex-1">
+                <h2 className="text-white text-lg font-bold">Prize Pool & Rewards</h2>
+                <p className="text-text-secondary text-sm leading-normal">
+                  Winning studio receives a <span className="text-white font-bold">₹50,000 cash prize</span> and the prestigious 'ShowGrid Certified' digital badge for their official profile.
+                </p>
+              </div>
+              <div className="hidden sm:block">
+                <div className="size-20 bg-primary/20 rounded-full flex items-center justify-center border-2 border-primary/40">
+                  <span className="material-symbols-outlined text-primary text-4xl">workspace_premium</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </Card>
 
-      {/* Rules */}
-      <Card variant="elevated">
-        <h2 className="font-sora font-semibold text-lg text-frost-white mb-4">Challenge Rules</h2>
-        
-        <ul className="space-y-3">
-          {mockChallenge.rules.map((rule, index) => (
-            <li key={index} className="flex items-start gap-3">
-              <span className="w-6 h-6 bg-violet-core/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-violet-core text-xs font-semibold">{index + 1}</span>
-              </span>
-              <span className="text-soft-grey">{rule}</span>
-            </li>
-          ))}
-        </ul>
+        {/* Consent Checkboxes */}
+        <div className="bg-background-dark rounded-xl p-6 border border-border-secondary mb-10">
+          <div className="space-y-1 mb-4">
+            <h3 className="text-white font-bold">Participation Confirmation</h3>
+            <p className="text-text-secondary text-xs">Please confirm you've read and understood the rules.</p>
+          </div>
+          <div className="flex flex-col">
+            <label className="flex gap-x-3 py-3 items-center cursor-pointer group">
+              <input 
+                type="checkbox"
+                checked={confirmations.original}
+                onChange={(e) => setConfirmations(prev => ({ ...prev, original: e.target.checked }))}
+                className="h-5 w-5 rounded border-border-primary border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-primary focus:ring-offset-background-dark focus:outline-none transition-all accent-primary"
+              />
+              <p className="text-white text-sm font-medium leading-normal group-hover:text-primary transition-colors">
+                I confirm our video entry is original and recorded for this challenge.
+              </p>
+            </label>
+            <label className="flex gap-x-3 py-3 items-center cursor-pointer group">
+              <input 
+                type="checkbox"
+                checked={confirmations.noRemix}
+                onChange={(e) => setConfirmations(prev => ({ ...prev, noRemix: e.target.checked }))}
+                className="h-5 w-5 rounded border-border-primary border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-primary focus:ring-offset-background-dark focus:outline-none transition-all accent-primary"
+              />
+              <p className="text-white text-sm font-medium leading-normal group-hover:text-primary transition-colors">
+                I understand that any music remixing will lead to disqualification.
+              </p>
+            </label>
+            <label className="flex gap-x-3 py-3 items-center cursor-pointer group">
+              <input 
+                type="checkbox"
+                checked={confirmations.scoringWeights}
+                onChange={(e) => setConfirmations(prev => ({ ...prev, scoringWeights: e.target.checked }))}
+                className="h-5 w-5 rounded border-border-primary border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-primary focus:ring-offset-background-dark focus:outline-none transition-all accent-primary"
+              />
+              <p className="text-white text-sm font-medium leading-normal group-hover:text-primary transition-colors">
+                I agree to the scoring weights (40/30/30) as final.
+              </p>
+            </label>
+          </div>
+        </div>
 
-        <div className="mt-6 pt-4 border-t border-border-grey">
-          <p className="text-soft-grey text-sm">
-            By participating, you agree to all rules. Violations may result in disqualification.
+        {/* Footer Action */}
+        <div className="flex flex-col items-center gap-4">
+          <Link 
+            href="/"
+            className={`flex min-w-[320px] max-w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-10 text-white text-lg font-extrabold leading-normal tracking-[0.015em] shadow-lg transition-all ${
+              allConfirmed 
+                ? 'bg-primary shadow-primary/20 hover:scale-105 active:scale-95' 
+                : 'bg-primary/50 cursor-not-allowed'
+            }`}
+          >
+            <span className="truncate">Got it, take me back</span>
+          </Link>
+          <p className="text-text-secondary text-xs">
+            By clicking, you acknowledge the terms of participation.
           </p>
         </div>
-      </Card>
-    </PageContainer>
+      </main>
+    </div>
   );
 }

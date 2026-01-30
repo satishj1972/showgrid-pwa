@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import MobileNav from '@/components/layout/MobileNav';
 import { AuthProvider } from '@/components/providers';
 
 export const metadata: Metadata = {
@@ -15,7 +12,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#6C4AFF',
+  themeColor: '#f4259d',
 };
 
 export default function RootLayout({
@@ -25,14 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-carbon-black text-frost-white flex flex-col">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+      </head>
+      <body className="min-h-screen bg-background-dark text-white font-display">
         <AuthProvider>
-          <Header />
-          <div className="flex-1">
-            {children}
-          </div>
-          <Footer />
-          <MobileNav />
+          {children}
         </AuthProvider>
       </body>
     </html>

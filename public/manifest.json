@@ -1,11 +1,11 @@
 {
-  "name": "ShowGrid Challenge",
+  "name": "ShowGrid Dance Challenge",
   "short_name": "ShowGrid",
-  "description": "India's premier creative challenge platform",
+  "description": "India's premier dance studio challenge platform",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#050507",
-  "theme_color": "#6C4AFF",
+  "background_color": "#12080d",
+  "theme_color": "#f4259d",
   "orientation": "portrait",
   "icons": [
     {
